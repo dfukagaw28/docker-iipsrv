@@ -1,5 +1,7 @@
 FROM debian:12-slim AS build
 
+LABEL org.opencontainers.image.source https://github.com/dfukagaw28/docker-iipsrv
+
 ENV PYTHONUNBUFFERED 1
 
 ENV IIPSRV_BUILD_DEPS \

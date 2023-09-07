@@ -2,13 +2,15 @@
 
 IIPImage server
 
-## How to build docker image
+## How to use
+
+### build docker image
 
 ```
 $ docker build . -t iipsrv:latest
 ```
 
-## How to run
+### How to run
 
 Prepare some image file(s)
 ```
@@ -21,7 +23,7 @@ Start & run a container:
 $ docker run --rm -it -p 3000:80 -v /files/tirdb/pyramids/:/data/images/:ro iipsrv:latest
 ```
 
-## How to test
+### How to test
 
 ```
 $ curl -si http://127.0.0.1:3000/?IIIF=example.tif/info.json
@@ -67,4 +69,16 @@ Date: Thu, 07 Sep 2023 14:21:44 GMT
   ]
 
 }
+```
+
+## GitHub Container registry
+
+```
+$ docker build . -t ghcr.io/dfukagaw28/iipsrv:1.2
+```
+
+```
+$ export CR_PAT=PERSONAL_ACCESS_TOKEN
+$ echo $CR_PAT | docker login ghcr.io -u dfukagaw28 --password-stdin
+$ docker push ghcr.io/dfukagaw28/iipsrv:1.2
 ```
