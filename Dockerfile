@@ -1,12 +1,7 @@
-FROM debian:stretch-slim
-
-LABEL maintainer "Daiji Fukagawa <dfukagaw28@gmail.com>"
+FROM debian:12-slim AS build
 
 ENV PYTHONUNBUFFERED 1
 
-#ENV IIPSRV_VERSION iipsrv-1.0
-ENV IIPSRV_VERSION cabd72aeca6f1cefae7c75c383f541fd7d2cb2cf
-ENV IIPSRV_SHA256 f205af64f92d679b057a4a3850e65b2929d171de4b90bc28d32861864bbea55e
 ENV IIPSRV_BUILD_DEPS \
         autoconf \
         automake \
@@ -14,9 +9,11 @@ ENV IIPSRV_BUILD_DEPS \
         curl \
         g++ \
         gawk \
+        git \
         libtool \
         make \
         pkg-config
+
 RUN set -ex \
     && apt-get update \
     && DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
@@ -25,28 +22,37 @@ RUN set -ex \
         libjpeg-dev \
         libmemcached-dev \
         libopenjp2-7-dev \
+        libpng-dev \
         libtiff-dev \
-    && cd /usr/local/src \
-    && curl -sL -o iipsrv.tar.gz \
-        https://github.com/ruven/iipsrv/archive/${IIPSRV_VERSION}.tar.gz \
-    && echo ${IIPSRV_SHA256}  iipsrv.tar.gz | sha256sum -c \
-    && tar zxf iipsrv.tar.gz
-WORKDIR /usr/local/src/iipsrv-${IIPSRV_VERSION}
+        libwebp-dev
+
+RUN set -ex \
+    && git clone https://github.com/ruven/iipsrv /usr/local/src/iipsrv -b iipsrv-1.2 --depth 1
+
+WORKDIR /usr/local/src/iipsrv
+
 RUN set -ex \
     && ./autogen.sh \
     && ./configure --enable-openjpeg \
     && make
-RUN set -ex \
-    && cp src/iipsrv.fcgi /usr/local/bin/ \
-#    && rm -rf /usr/local/src/iipsrv-${IIPSRV_VERSION} \
-    && DEBIAN_FRONTEND=noninteractive apt-get purge -y $IIPSRV_BUILD_DEPS \
-    && apt-get clean \
-    && rm -rf /var/lib/apt/lists/*
-WORKDIR /
+
+
+FROM debian:12-slim
+
+COPY --from=build /usr/local/src/iipsrv/src/iipsrv.fcgi /usr/local/bin/iipsrv.fcgi
 
 RUN set -ex \
     && apt-get update \
     && DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
+        libfcgi \
+        libgomp1 \
+        libjpeg62-turbo \
+        libmemcached11 \
+        libopenjp2-7 \
+        libpng16-16 \
+        libtiff6 \
+        libwebp7 \
+        libwebpmux3 \
         lighttpd \
     && mkdir -p /var/run/lighttpd \
     && apt-get clean \
