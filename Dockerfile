@@ -54,7 +54,7 @@ RUN set -ex \
         libwebp7 \
         libwebpmux3 \
         lighttpd \
-    && mkdir -p /var/run/lighttpd \
+    && mkdir -p /run/lighttpd \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
 
