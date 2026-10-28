@@ -56,6 +56,8 @@ RUN set -ex \
         lighttpd \
         media-types \
     && mkdir -p /run/lighttpd \
+    && chown www-data:www-data /run/lighttpd \
+    && usermod -aG tty www-data \
     && rm -f /etc/lighttpd/conf-enabled/99-unconfigured.conf \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
