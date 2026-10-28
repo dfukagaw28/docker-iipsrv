@@ -1,0 +1,81 @@
+name: Docker image
+
+on:
+  push:
+    branches: [master]
+  pull_request:
+  schedule:
+    # Rebuild weekly to pick up Debian security updates
+    - cron: '0 3 * * 1'
+  workflow_dispatch:
+
+env:
+  IMAGE: ghcr.io/${{ github.repository_owner }}/iipsrv
+
+jobs:
+  build:
+    runs-on: ubuntu-24.04
+    permissions:
+      contents: read
+      packages: write
+    steps:
+      - uses: actions/checkout@v7
+
+      - name: Read iipsrv version
+        id: version
+        run: echo "version=$(sed -n 's/^ARG IIPSRV_VERSION=//p' Dockerfile)" >> "$GITHUB_OUTPUT"
+
+      - uses: docker/setup-buildx-action@v4
+
+      - name: Build
+        uses: docker/build-push-action@v7
+        with:
+          context: .
+          load: true
+          tags: iipsrv:test
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+      - name: Prepare test image
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y --no-install-recommends libvips-tools
+          mkdir images
+          vips black base.v 1000 1000 --bands 3
+          vips tiffsave base.v images/example.tif --tile --pyramid --compression jpeg --tile-width 256 --tile-height 256
+          chmod -R a+rX images
+
+      - name: Test
+        run: |
+          docker run -d -t --name iipsrv -p 3000:80 -v "$PWD/images:/data/images:ro" iipsrv:test
+          for i in $(seq 1 30); do
+            curl -sf -o /dev/null 'http://127.0.0.1:3000/?IIIF=example.tif/info.json' && break
+            sleep 1
+          done
+          curl -sf 'http://127.0.0.1:3000/?IIIF=example.tif/info.json' | jq -e '.width == 1000 and .height == 1000'
+          for q in full/200,/0/default.jpg 0,0,256,256/max/0/default.webp full/100,/0/default.png; do
+            curl -sf -o /dev/null -w "%{http_code} %{content_type} $q\n" "http://127.0.0.1:3000/?IIIF=example.tif/$q"
+          done
+
+      - name: Show container logs
+        if: always()
+        run: docker logs iipsrv || true
+
+      - name: Log in to GitHub Container Registry
+        if: github.event_name != 'pull_request'
+        uses: docker/login-action@v4
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Push
+        if: github.event_name != 'pull_request'
+        uses: docker/build-push-action@v7
+        with:
+          context: .
+          push: true
+          tags: |
+            ${{ env.IMAGE }}:${{ steps.version.outputs.version }}
+            ${{ env.IMAGE }}:latest
+          cache-from: type=gha

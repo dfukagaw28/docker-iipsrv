@@ -24,8 +24,10 @@ RUN set -ex \
         libtiff-dev \
         libwebp-dev
 
+ARG IIPSRV_VERSION=1.3
+
 RUN set -ex \
-    && git clone https://github.com/ruven/iipsrv /usr/local/src/iipsrv -b iipsrv-1.3 --depth 1
+    && git clone https://github.com/ruven/iipsrv /usr/local/src/iipsrv -b iipsrv-${IIPSRV_VERSION} --depth 1
 
 WORKDIR /usr/local/src/iipsrv
 
