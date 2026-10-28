@@ -56,6 +56,7 @@ RUN set -ex \
         lighttpd \
         media-types \
     && mkdir -p /run/lighttpd \
+    && rm -f /etc/lighttpd/conf-enabled/99-unconfigured.conf \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
 
