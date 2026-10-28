@@ -4,23 +4,31 @@ IIPImage server
 
 ## How to use
 
-### build docker image
+### Get the docker image
 
+Pull a prebuilt image from GitHub Container Registry:
 ```
-$ docker build . -t iipsrv:latest
+$ docker pull ghcr.io/dfukagaw28/iipsrv:latest
+```
+
+Or build it yourself:
+```
+$ docker build . -t ghcr.io/dfukagaw28/iipsrv:latest
 ```
 
 ### How to run
 
-Prepare some image file(s)
+Prepare some image file(s) in a directory.
+Images must be tiled pyramid TIFF or JPEG2000, and readable by the `www-data` user (uid 33) in the container.
+
+For example, a tiled pyramid TIFF can be created with [libvips](https://www.libvips.org/):
 ```
-$ file /files/tirdb/pyramids/67352ccc-d1b0-11e1-89ae-279075081939.tif
-/files/tirdb/pyramids/67352ccc-d1b0-11e1-89ae-279075081939.tif: TIFF image data, little-endian, direntries=22, height=1000, bps=15556, compression=JPEG, PhotometricIntepretation=RGB, name=67352ccc-d1b0-11e1-89ae-279075081939.tif, orientation=upper-left, width=1000
+$ vips tiffsave input.jpg /path/to/images/example.tif --tile --pyramid --compression jpeg --tile-width 256 --tile-height 256
 ```
 
 Start & run a container:
 ```
-$ docker run --rm -it -p 3000:80 -v /files/tirdb/pyramids/:/data/images/:ro iipsrv:latest
+$ docker run --rm -it -p 3000:80 -v /path/to/images/:/data/images/:ro ghcr.io/dfukagaw28/iipsrv:latest
 ```
 
 ### How to test
@@ -75,12 +83,15 @@ Date: Wed, 28 Oct 2026 20:30:40 GMT
 
 ## GitHub Container registry
 
-```
-$ docker build . -t ghcr.io/dfukagaw28/iipsrv:1.3
-```
+The image is built, tested and pushed to `ghcr.io/dfukagaw28/iipsrv` by GitHub Actions
+(`.github/workflows/docker.yml`) on every push to `master` and weekly, so that Debian security updates are picked up.
+It is tagged with the iipsrv version (`IIPSRV_VERSION` in `Dockerfile`) and `latest`.
 
+To push manually:
 ```
+$ docker build . -t ghcr.io/dfukagaw28/iipsrv:1.3 -t ghcr.io/dfukagaw28/iipsrv:latest
 $ export CR_PAT=PERSONAL_ACCESS_TOKEN
 $ echo $CR_PAT | docker login ghcr.io -u dfukagaw28 --password-stdin
 $ docker push ghcr.io/dfukagaw28/iipsrv:1.3
+$ docker push ghcr.io/dfukagaw28/iipsrv:latest
 ```
