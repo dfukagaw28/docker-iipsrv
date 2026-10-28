@@ -1,4 +1,4 @@
-FROM debian:12-slim AS build
+FROM debian:13-slim AS build
 
 ENV IIPSRV_BUILD_DEPS="\
         autoconf \
@@ -35,7 +35,7 @@ RUN set -ex \
     && make
 
 
-FROM debian:12-slim
+FROM debian:13-slim
 
 LABEL org.opencontainers.image.source=https://github.com/dfukagaw28/docker-iipsrv
 
@@ -44,16 +44,17 @@ COPY --from=build /usr/local/src/iipsrv/src/iipsrv.fcgi /usr/local/bin/iipsrv.fc
 RUN set -ex \
     && apt-get update \
     && DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
-        libfcgi \
+        libfcgi0t64 \
         libgomp1 \
         libjpeg62-turbo \
-        libmemcached11 \
+        libmemcached11t64 \
         libopenjp2-7 \
-        libpng16-16 \
+        libpng16-16t64 \
         libtiff6 \
         libwebp7 \
         libwebpmux3 \
         lighttpd \
+        media-types \
     && mkdir -p /run/lighttpd \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
