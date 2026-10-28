@@ -28,7 +28,7 @@ $ docker run --rm -it -p 3000:80 -v /files/tirdb/pyramids/:/data/images/:ro iips
 ```
 $ curl -si http://127.0.0.1:3000/?IIIF=example.tif/info.json
 HTTP/1.1 200 OK
-Server: iipsrv/1.2
+Server: iipsrv/1.3
 X-Powered-By: IIPImage
 Content-Type: application/ld+json;profile="http://iiif.io/api/image/3/context.json"
 Last-Modified: Tue, 21 Feb 2017 07:36:59 GMT
@@ -74,11 +74,11 @@ Date: Thu, 07 Sep 2023 14:21:44 GMT
 ## GitHub Container registry
 
 ```
-$ docker build . -t ghcr.io/dfukagaw28/iipsrv:1.2
+$ docker build . -t ghcr.io/dfukagaw28/iipsrv:1.3
 ```
 
 ```
 $ export CR_PAT=PERSONAL_ACCESS_TOKEN
 $ echo $CR_PAT | docker login ghcr.io -u dfukagaw28 --password-stdin
-$ docker push ghcr.io/dfukagaw28/iipsrv:1.2
+$ docker push ghcr.io/dfukagaw28/iipsrv:1.3
 ```

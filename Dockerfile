@@ -25,7 +25,7 @@ RUN set -ex \
         libwebp-dev
 
 RUN set -ex \
-    && git clone https://github.com/ruven/iipsrv /usr/local/src/iipsrv -b iipsrv-1.2 --depth 1
+    && git clone https://github.com/ruven/iipsrv /usr/local/src/iipsrv -b iipsrv-1.3 --depth 1
 
 WORKDIR /usr/local/src/iipsrv
 
