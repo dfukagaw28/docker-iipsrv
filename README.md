@@ -46,8 +46,8 @@ Access-Control-Allow-Methods: GET, POST, OPTIONS
 Access-Control-Allow-Headers: Accept, Content-Type, X-Requested-With, If-Modified-Since
 Access-Control-Max-Age: 86400
 Accept-Ranges: bytes
-Content-Length: 900
-Date: Wed, 28 Oct 2026 20:30:40 GMT
+Content-Length: 907
+Date: Wed, 28 Oct 2026 21:17:19 GMT
 
 {
   "@context" : "http://iiif.io/api/image/3/context.json",
@@ -67,7 +67,7 @@ Date: Wed, 28 Oct 2026 20:30:40 GMT
   "maxWidth" : 3000,
   "maxHeight" : 3000,
   "extraQualities": ["color","gray","bitonal"],
-  "extraFormats": ["tif","webp"],
+  "extraFormats": ["tif","webp","avif"],
   "extraFeatures": ["regionByPct","sizeByPct","sizeByConfinedWh","sizeUpscaling","rotationBy90s","mirroring"],
   "service": [
     {

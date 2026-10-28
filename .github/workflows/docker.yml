@@ -53,7 +53,7 @@ jobs:
             sleep 1
           done
           curl -sf 'http://127.0.0.1:3000/?IIIF=example.tif/info.json' | jq -e '.width == 1000 and .height == 1000'
-          for q in full/200,/0/default.jpg 0,0,256,256/max/0/default.webp full/100,/0/default.png; do
+          for q in full/200,/0/default.jpg 0,0,256,256/max/0/default.webp full/100,/0/default.png full/200,/0/default.avif; do
             curl -sf -o /dev/null -w "%{http_code} %{content_type} $q\n" "http://127.0.0.1:3000/?IIIF=example.tif/$q"
           done
 

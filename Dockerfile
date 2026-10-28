@@ -16,6 +16,7 @@ RUN set -ex \
     && apt-get update \
     && DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
         $IIPSRV_BUILD_DEPS \
+        libavif-dev \
         libfcgi-dev \
         libjpeg-dev \
         libmemcached-dev \
@@ -46,6 +47,7 @@ COPY --from=build /usr/local/src/iipsrv/src/iipsrv.fcgi /usr/local/bin/iipsrv.fc
 RUN set -ex \
     && apt-get update \
     && DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
+        libavif16 \
         libfcgi0t64 \
         libgomp1 \
         libjpeg62-turbo \
