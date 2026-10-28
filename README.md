@@ -31,11 +31,15 @@ HTTP/1.1 200 OK
 Server: iipsrv/1.3
 X-Powered-By: IIPImage
 Content-Type: application/ld+json;profile="http://iiif.io/api/image/3/context.json"
-Last-Modified: Tue, 21 Feb 2017 07:36:59 GMT
+Last-Modified: Wed, 28 Oct 2026 20:30:39 GMT
 Cache-Control: max-age=86400
+Access-Control-Allow-Origin: *
+Access-Control-Allow-Methods: GET, POST, OPTIONS
+Access-Control-Allow-Headers: Accept, Content-Type, X-Requested-With, If-Modified-Since
+Access-Control-Max-Age: 86400
 Accept-Ranges: bytes
-Content-Length: 992
-Date: Thu, 07 Sep 2023 14:21:44 GMT
+Content-Length: 900
+Date: Wed, 28 Oct 2026 20:30:40 GMT
 
 {
   "@context" : "http://iiif.io/api/image/3/context.json",
@@ -43,13 +47,11 @@ Date: Thu, 07 Sep 2023 14:21:44 GMT
   "width" : 1000,
   "height" : 1000,
   "sizes" : [
-     { "width" : 62, "height" : 62 },
-     { "width" : 125, "height" : 125 },
      { "width" : 250, "height" : 250 },
      { "width" : 500, "height" : 500 }
   ],
   "tiles" : [
-     { "width" : 256, "height" : 256, "scaleFactors" : [ 1, 2, 4, 8, 16 ] }
+     { "width" : 256, "height" : 256, "scaleFactors" : [ 1, 2, 4 ] }
   ],
   "id" : "http://127.0.0.1:3000/?IIIF=example.tif",
   "type": "ImageService3",
@@ -57,14 +59,14 @@ Date: Thu, 07 Sep 2023 14:21:44 GMT
   "maxWidth" : 3000,
   "maxHeight" : 3000,
   "extraQualities": ["color","gray","bitonal"],
-  "extraFormats": ["webp"],
-  "extraFeatures": ["regionByPct","sizeByForcedWh","sizeByWh","sizeAboveFull","sizeUpscaling","rotationBy90s","mirroring"],
+  "extraFormats": ["tif","webp"],
+  "extraFeatures": ["regionByPct","sizeByPct","sizeByConfinedWh","sizeUpscaling","rotationBy90s","mirroring"],
   "service": [
     {
       "@context": "http://iiif.io/api/annex/services/physdim/1/context.json",
       "profile": "http://iiif.io/api/annex/services/physdim",
-      "physicalScale": 0.0138889,
-      "physicalUnits": "cm"
+      "physicalScale": 0.0393701,
+      "physicalUnits": "in"
     }
   ]
 
