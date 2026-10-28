@@ -1,10 +1,6 @@
 FROM debian:12-slim AS build
 
-LABEL org.opencontainers.image.source https://github.com/dfukagaw28/docker-iipsrv
-
-ENV PYTHONUNBUFFERED 1
-
-ENV IIPSRV_BUILD_DEPS \
+ENV IIPSRV_BUILD_DEPS="\
         autoconf \
         automake \
         ca-certificates \
@@ -14,7 +10,7 @@ ENV IIPSRV_BUILD_DEPS \
         git \
         libtool \
         make \
-        pkg-config
+        pkg-config"
 
 RUN set -ex \
     && apt-get update \
@@ -40,6 +36,8 @@ RUN set -ex \
 
 
 FROM debian:12-slim
+
+LABEL org.opencontainers.image.source=https://github.com/dfukagaw28/docker-iipsrv
 
 COPY --from=build /usr/local/src/iipsrv/src/iipsrv.fcgi /usr/local/bin/iipsrv.fcgi
 
