@@ -31,6 +31,8 @@ Start & run a container:
 $ docker run --rm -it -p 3000:80 -v /path/to/images/:/data/images/:ro ghcr.io/dfukagaw28/iipsrv:latest
 ```
 
+Logs of lighttpd and iipsrv go to the container's stderr (`docker logs`); a TTY (`-t`) is not required.
+
 Images are served as IIIF at `/iiif/<file>/...` (e.g. `/iiif/example.tif/info.json`).
 The query string form `/?IIIF=<file>/...` also works, but it does not support `HEAD` requests.
 
