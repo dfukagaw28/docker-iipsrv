@@ -124,7 +124,7 @@ $ test/test.sh iipsrv:test
 ## GitHub Container registry
 
 The image is built, tested and pushed to `ghcr.io/dfukagaw28/iipsrv` by GitHub Actions
-(`.github/workflows/docker.yml`) on every push to `master` and weekly, so that Debian security updates are picked up.
+(`.github/workflows/docker.yml`) on every push to `main` and weekly, so that Debian security updates are picked up.
 It is tagged with the iipsrv version (`IIPSRV_VERSION` in `Dockerfile`) and `latest`.
 
 To push manually:
