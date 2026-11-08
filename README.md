@@ -31,10 +31,39 @@ Start & run a container:
 $ docker run --rm -it -p 3000:80 -v /path/to/images/:/data/images/:ro ghcr.io/dfukagaw28/iipsrv:latest
 ```
 
+Images are served as IIIF at `/iiif/<file>/...` (e.g. `/iiif/example.tif/info.json`).
+The query string form `/?IIIF=<file>/...` also works, but it does not support `HEAD` requests.
+
+### Configuration
+
+iipsrv is configured with environment variables (`-e NAME=value`).
+Any [iipsrv variable](https://iipimage.sourceforge.io/documentation/server/) can be set; the image sets these defaults:
+
+| Variable | Default | Description |
+|---|---|---|
+| `FILESYSTEM_PREFIX` | `/data/images/` | Directory of the images inside the container |
+| `URI_MAP` | `iiif=>IIIF` | Serve IIIF at `/iiif/...` |
+| `IIIF_VERSION` | `3` | IIIF Image API version |
+| `BASE_URL` | (unset) | Public URL prefix for `id` in `info.json`, e.g. `https://example.org/iiif/`. Set it behind a reverse proxy (otherwise `id` is built from the `Host` header with `http://`) |
+| `CORS` | `*` | `Access-Control-Allow-Origin` |
+| `MAX_IMAGE_CACHE_SIZE` | `10` | Image cache size (MB) |
+| `JPEG_QUALITY` | `75` | JPEG quality |
+| `PNG_QUALITY` | `1` | PNG compression level |
+| `WEBP_QUALITY` | `50` | WebP quality |
+| `MAX_CVT` | `3000` | Maximum output width/height (px) |
+| `LOGFILE` | `/var/log/iipsrv.log` | Linked to the container's stderr |
+| `VERBOSITY` | (unset: 1) | Log level (0-6) |
+
+Example behind a reverse proxy that maps `https://example.org/iiif/` to the container:
+```
+$ docker run -d -p 127.0.0.1:3000:80 -v /path/to/images/:/data/images/:ro \
+    -e BASE_URL=https://example.org/iiif/ ghcr.io/dfukagaw28/iipsrv:latest
+```
+
 ### How to test
 
 ```
-$ curl -si http://127.0.0.1:3000/?IIIF=example.tif/info.json
+$ curl -si http://127.0.0.1:3000/iiif/example.tif/info.json
 HTTP/1.1 200 OK
 Server: iipsrv/1.3
 X-Powered-By: IIPImage
@@ -61,7 +90,7 @@ Date: Wed, 28 Oct 2026 21:17:19 GMT
   "tiles" : [
      { "width" : 256, "height" : 256, "scaleFactors" : [ 1, 2, 4 ] }
   ],
-  "id" : "http://127.0.0.1:3000/?IIIF=example.tif",
+  "id" : "http://127.0.0.1:3000/iiif/example.tif",
   "type": "ImageService3",
   "profile" : "level2",
   "maxWidth" : 3000,
@@ -79,6 +108,15 @@ Date: Wed, 28 Oct 2026 21:17:19 GMT
   ]
 
 }
+```
+
+### Run the tests
+
+`test/test.sh` builds a test image with libvips, runs the container and checks the responses
+(requires docker or podman, curl, jq and vips):
+```
+$ docker build . -t iipsrv:test
+$ test/test.sh iipsrv:test
 ```
 
 ## GitHub Container registry

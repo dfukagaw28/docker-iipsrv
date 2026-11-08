@@ -68,6 +68,19 @@ RUN set -ex \
 
 COPY lighttpd/lighttpd.conf /etc/lighttpd/lighttpd.conf
 
+# iipsrv settings (override with `-e NAME=value`).
+# See https://iipimage.sourceforge.io/documentation/server/ for all variables.
+ENV LOGFILE=/var/log/iipsrv.log \
+    FILESYSTEM_PREFIX=/data/images/ \
+    URI_MAP="iiif=>IIIF" \
+    IIIF_VERSION=3 \
+    MAX_IMAGE_CACHE_SIZE=10 \
+    JPEG_QUALITY=75 \
+    PNG_QUALITY=1 \
+    WEBP_QUALITY=50 \
+    MAX_CVT=3000 \
+    CORS=*
+
 CMD ["lighttpd", "-D", "-f", "/etc/lighttpd/lighttpd.conf"]
 
 EXPOSE 80
