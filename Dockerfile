@@ -61,7 +61,6 @@ RUN set -ex \
         media-types \
     && mkdir -p /run/lighttpd \
     && chown www-data:www-data /run/lighttpd \
-    && usermod -aG tty www-data \
     && rm -f /etc/lighttpd/conf-enabled/99-unconfigured.conf \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
@@ -81,11 +80,15 @@ ENV LOGFILE=/var/log/iipsrv.log \
     MAX_CVT=3000 \
     CORS=*
 
+# Logs go to a FIFO created by the entrypoint and relayed to stderr.
+COPY docker-entrypoint.sh /usr/local/bin/docker-entrypoint.sh
+RUN set -ex \
+    && chmod +x /usr/local/bin/docker-entrypoint.sh \
+    && ln -sfT /run/log/stderr.fifo "/var/log/lighttpd/error.log" \
+    && ln -sfT /run/log/stderr.fifo "/var/log/lighttpd/access.log" \
+    && ln -sfT /run/log/stderr.fifo "/var/log/iipsrv.log"
+
+ENTRYPOINT ["docker-entrypoint.sh"]
 CMD ["lighttpd", "-D", "-f", "/etc/lighttpd/lighttpd.conf"]
 
 EXPOSE 80
-
-RUN set -ex \
-    && ln -sfT /dev/stderr "/var/log/lighttpd/error.log" \
-    && ln -sfT /dev/stderr "/var/log/lighttpd/access.log" \
-    && ln -sfT /dev/stderr "/var/log/iipsrv.log"
