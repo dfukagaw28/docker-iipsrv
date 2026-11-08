@@ -2,7 +2,7 @@ name: Docker image
 
 on:
   push:
-    branches: [master]
+    branches: [main]
   pull_request:
   schedule:
     # Rebuild weekly to pick up Debian security updates
