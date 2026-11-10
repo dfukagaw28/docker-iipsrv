@@ -53,6 +53,7 @@ Any [iipsrv variable](https://iipimage.sourceforge.io/documentation/server/) can
 | `PNG_QUALITY` | `1` | PNG compression level |
 | `WEBP_QUALITY` | `50` | WebP quality |
 | `MAX_CVT` | `3000` | Maximum output width/height (px) |
+| `IIPSRV_PROCS` | `1` | Number of iipsrv processes. Each handles one request at a time, so raise it to serve several clients (or a bulk import) in parallel. Each process has its own image cache (`MAX_IMAGE_CACHE_SIZE`) |
 | `LOGFILE` | `/var/log/iipsrv.log` | Linked to the container's stderr |
 | `VERBOSITY` | (unset: 1) | Log level (0-6) |
 

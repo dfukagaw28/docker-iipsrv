@@ -17,4 +17,9 @@ if [ "$(id -u)" = 0 ]; then
     cat <> "$FIFO" >&2 &
 fi
 
+# Number of iipsrv processes, read by lighttpd.conf
+case "${IIPSRV_PROCS:-1}" in
+    ''|*[!0-9]*|0|0*) echo "IIPSRV_PROCS must be a positive integer, got '${IIPSRV_PROCS:-}'" >&2; exit 1 ;;
+esac
+
 exec "$@"

@@ -78,7 +78,8 @@ ENV LOGFILE=/var/log/iipsrv.log \
     PNG_QUALITY=1 \
     WEBP_QUALITY=50 \
     MAX_CVT=3000 \
-    CORS=*
+    CORS=* \
+    IIPSRV_PROCS=1
 
 # Logs go to a FIFO created by the entrypoint and relayed to stderr.
 COPY docker-entrypoint.sh /usr/local/bin/docker-entrypoint.sh

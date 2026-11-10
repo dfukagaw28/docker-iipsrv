@@ -33,6 +33,9 @@ check() {
     if [ "$2" = "$3" ]; then ok "$1"; else fail "$1 (expected '$2', got '$3')"; fi
 }
 
+# Number of iipsrv processes in a container
+procs() { $ENGINE exec "$1" sh -c 'cat /proc/[0-9]*/comm 2>/dev/null' | grep -c '^iipsrv'; }
+
 status() { curl -s -o /dev/null -w '%{http_code} %{content_type}' "$@"; }
 
 wait_for() {
@@ -61,6 +64,7 @@ info="$(curl -sf "$BASE/?IIIF=example.tif/info.json")"
 check "info.json size (query URL)"    "1000x1000" "$(echo "$info" | jq -r '"\(.width)x\(.height)"')"
 check "IIIF version 3"                "ImageService3" "$(echo "$info" | jq -r '.type')"
 check "MAX_CVT default"               "3000" "$(echo "$info" | jq -r '.maxWidth')"
+check "IIPSRV_PROCS default"          "1" "$(procs iipsrv-test-default)"
 
 info="$(curl -sf "$BASE/iiif/example.tif/info.json")"
 check "info.json size (/iiif/ URL)"   "1000x1000" "$(echo "$info" | jq -r '"\(.width)x\(.height)"')"
@@ -85,6 +89,7 @@ $ENGINE run -d --name iipsrv-test-env -p "127.0.0.1:$PORT2:80" \
     -e FILESYSTEM_PREFIX=/srv/img/ \
     -e BASE_URL=https://example.org/iiif/ \
     -e MAX_CVT=500 \
+    -e IIPSRV_PROCS=3 \
     "$IMAGE" >/dev/null
 BASE="http://127.0.0.1:$PORT2"
 wait_for "$BASE/iiif/example.tif/info.json"
@@ -93,6 +98,11 @@ info="$(curl -sf "$BASE/iiif/example.tif/info.json")"
 check "FILESYSTEM_PREFIX"             "1000x1000" "$(echo "$info" | jq -r '"\(.width)x\(.height)"')"
 check "BASE_URL"                      "https://example.org/iiif/example.tif" "$(echo "$info" | jq -r '.id')"
 check "MAX_CVT"                       "500" "$(echo "$info" | jq -r '.maxWidth')"
+check "IIPSRV_PROCS"                  "3" "$(procs iipsrv-test-env)"
+
+echo "== invalid settings"
+check "IIPSRV_PROCS=abc is refused"   "refused" \
+    "$(if $ENGINE run --rm -e IIPSRV_PROCS=abc "$IMAGE" true >/dev/null 2>&1; then echo started; else echo refused; fi)"
 
 if [ "$FAILED" != 0 ]; then
     echo "Some tests failed."
